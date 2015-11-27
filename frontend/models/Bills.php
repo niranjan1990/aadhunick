@@ -11,10 +11,13 @@ use yii\db\ActiveRecord;
  *
  * @property integer $id
  * @property integer $watches_id
- * @property integer $watches_price
+ * @property integer $pament_mode
  * @property integer $quantity
  * @property string $billrecord
  * @property string $created_at
+ *
+ * @property Watches $watches
+ * @property Payment $pamentMode
  */
 class Bills extends \yii\db\ActiveRecord
 {
@@ -61,10 +64,26 @@ class Bills extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'watches_id' => 'Watches ID',
-            'watches_price' => 'Watches Price',
+            'pament_mode' => 'Pament Mode',
             'quantity' => 'Quantity',
             'billrecord' => 'Billrecord',
             'created_at' => 'Created At',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getWatches()
+    {
+        return $this->hasOne(Watches::className(), ['id' => 'watches_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPamentMode()
+    {
+        return $this->hasOne(Payment::className(), ['id' => 'pament_mode']);
     }
 }

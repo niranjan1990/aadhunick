@@ -28,7 +28,7 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => 'IZone',
+        'brandLabel' => 'Aadhunick',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
@@ -53,8 +53,6 @@ AppAsset::register($this);
         $menuItems[]=['label'=>'Inventory','url'=>['/inventorystock/']];
         $menuItems[]=['label'=>'Watches','url'=>['/watches/']];
         $menuItems[]=['label'=>'Bills','url'=>['site/bill']];
-        $menuItems[]=['label'=>'Returns','url'=>['site/returns']];
-
     }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
@@ -74,7 +72,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; IZone <?= date('Y') ?></p>
+        <p class="pull-left">&copy; Aadhunick <?= date('Y') ?></p>
 
         <!--<p class="pull-right"><?/*= Yii::powered() */?></p>-->
     </div>

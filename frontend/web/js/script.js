@@ -2,25 +2,82 @@
 /**
  * Created by napster on 9/6/2015.
  */
+priceUpdate();
+Discount();
+Netvalue();
 
 $('#add').click(function () {
     var count = parseInt($('#add').attr('value'));
-    $('#bill').append("<tr><th>"+ count +"</th>" +
-    "<th><div class='form-group field-bills-watches_id-"+count+" required'>" +
-    "<label class='control-label' for='bills-watches_id-"+count+"'>Watches ID</label> " +
-    "<input type='text' id='bills-watches_id-"+count+"' class='form-control' name='Bills[watches_id]["+count+"]'> " +
-    "<div class='help-block'></div> " +
-    "</div></th>" +
-    "<th><div class='form-group field-bills-quantity-"+count+" required'>"+
-    "<label class='control-label' for='bills-quantity-"+count+"'>Quantity</label>"+
-    "<input type='text' id='bills-quantity-"+count+"' class='form-control' name='Bills[quantity]["+count+"]'>"+
-    "<div class='help-block'>Quantity cannot be blank</div>"+
-    "</div></th>" +
-     "<th><input type='text'></th></tr>");
+    $.get('/index.php/site/add-watch', {'count' : count}, function(data){
+        $('#bill tbody').append('<tr>'+data+'</tr>');
+
+        /*$('input[id^="bills-price"]').change(function(){
+            alert($(this).val());
+        });*/
+        priceUpdate();
+        Netvalue();
+    });
+
 
     $('#add').attr('value', count+1);
     delete count;
+
+
+
 });
+function priceUpdate () {
+    $('.bills-quantity').change(function () {
+        var quantity = $(this).val();
+        var id = $(this).attr('id');
+        var idArray = id.split('-');
+        var price = $('#bills-price-'+idArray[2]).val();
+        $('#bills-price-'+idArray[2]).val((price * +quantity));
+        updateTotal();
+    });
+}
+
+function Discount(){
+    $('#bills-discount').change(function(){
+       alert($(this).val());
+    });
+}
+
+function Netvalue(){
+    $('.bills-price').change(function(){
+       updateTotal();
+    });
+}
+
+function updateTotal() {
+    var items = $('.bills-price');
+    var total=0;
+    items.each(function() {
+        var price=$(this).val();
+        total=total + +price;
+        $('#bills-net').val(total);
+        /* alert($(this).attr('id'));
+         alert($(this).val());*/
+    });
+}
+
+/*
+
+var count = parseInt($('#add').attr('value'));
+
+$('input[id^="bills-price"]').change(function(){
+    alert($(this).val());
+});
+
+$('input[id^="bills-quantity"]').change(function(){
+
+    alert(count);
+});
+
+$('input[id^="bills-discount"]').change(function(){
+    alert($(this).val());
+});
+
+*/
 
 
 

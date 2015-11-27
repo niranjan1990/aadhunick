@@ -25,16 +25,6 @@ use frontend\models\watches;
                                     $("select#watches-modelno").html(data);
                         });
               '
-//                        $.get(
-//                            "' . Url::toRoute('watches/lists') . '",
-//                             { id: $(this).val(); }
-//                            );
-
-            /*$.post("/index.php/watches/lists&$id='.'"+$(this).val(),function(data){
-                $("select#models-contact").html(data);
-            });*/
-
-
         ]);
     ?>
 

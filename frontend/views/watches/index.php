@@ -34,7 +34,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'header' => 'modelno',
                 'value' => 'modelno'
             ],
-            'brands_id',
+            /*'brands_id',*/
+            [
+                'attribute' =>'brands_id',
+                'header' =>'Brands ID',
+                'value' =>function($model){
+                    return $model->brands->name;
+                }
+            ],
             [
                 'attribute' =>'marketplace_id',
                 'header' => 'market place',

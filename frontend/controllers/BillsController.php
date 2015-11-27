@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use frontend\models\Watches;
 use Yii;
 use frontend\models\Bills;
 use frontend\models\BillsSearch;
@@ -18,6 +19,16 @@ class BillsController extends Controller
     public function behaviors()
     {
         return [
+            /*'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['addBill'],
+                        'allow' => true,
+                        'roles' => ['*'],
+                    ],
+                ],
+            ],*/
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -122,4 +133,37 @@ class BillsController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+    public function actionBcontent($id){
+        $watch =Watches::find()->joinWith('brands')->where(['watches.id' =>$id])->one();
+
+        echo Json::encode(['modelno' => $watch->modelno, 'price' => $watch->price, 'brand' => $watch->brands->name]);
+
+        /*foreach($watches as $watch){
+            echo $watch->brands_id;
+        }*/
+
+       /* if($countPosts > 0 )
+        {
+            foreach($watches as $watch){
+                echo "<input id='bills-description-0' value='".$watch->brands_id."' '>";
+                echo "<option value='".$watch->id."'>" .$watch->modelno."</option>";
+            }
+        }else{
+            echo "<option></option>";
+        }*/
+    }
+
+    /*public function actionAddBill(){
+        $this->render('addBill');
+    }
+
+    public function actionUpdateAjax()
+    {
+        $data = array();
+        $data["myValue"] = "Content updated in AJAX";
+
+        $this->renderPartial('addBill', $data, true, true);
+    }*/
+
 }

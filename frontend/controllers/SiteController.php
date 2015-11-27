@@ -6,6 +6,7 @@ use frontend\models\Bills;
 use frontend\models\Brands;
 use frontend\models\Inventorystock;
 use frontend\models\Watches;
+use kartik\mpdf\Pdf;
 use Yii;
 use common\models\LoginForm;
 use frontend\models\PasswordResetRequestForm;
@@ -45,6 +46,11 @@ class SiteController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                    /*[
+                        'actions' => ['addBill'],
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],*/
                 ],
             ],
             'verbs' => [
@@ -95,6 +101,8 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            $js = '$("#modal").modal("show")';
+            $this->getView()->registerJs($js);
             return $this->render('dashboard');
         } else {
             return $this->render('login', [
@@ -124,7 +132,7 @@ class SiteController extends Controller
     {
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->contact()) {
-                Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
+            Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
             return $this->refresh();
         } else {
             return $this->render('contact', [
@@ -141,6 +149,19 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    public function actionTemplate()
+    {
+        return $this->renderPartial('billTemplate', [
+            'items' => [
+                ['model' => '15803', 'description' => 'titan', 'quantity' => '2', 'price' => '133'],
+                ['model' => '15802', 'description' => 'titan', 'quantity' => '2', 'price' => '133'],
+                ['model' => '15801', 'description' => 'titan', 'quantity' => '2', 'price' => '133']
+            ]
+
+        ]);
+        //return $this->render('billTemplate');
     }
 
     /**
@@ -213,11 +234,13 @@ class SiteController extends Controller
         ]);
     }
 
-    public function actionDashboard(){
+    public function actionDashboard()
+    {
         return $this->render('dashboard');
     }
 
-    public function actionInventory(){
+    public function actionInventory()
+    {
         $model = new Inventorystock();
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->refresh();
@@ -228,53 +251,111 @@ class SiteController extends Controller
         }
     }
 
-    public function actionStock(){
+    public function actionStock()
+    {
         return $this->render('stock');
     }
 
-    public function actionBill(){
+    public function actionBill()
+    {
+
         $model = new Bills();
         if (Yii::$app->request->isPost) {
             $bills = Yii::$app->request->post('Bills');
-            for ($i=0; $i < sizeof($bills['watches_id']); $i++){
+
+            for ($i = 0; $i < sizeof($bills); $i++) {
                 $model = new Bills();
                 $model->billrecord = $bills['billrecord'];
+                $model->pament_mode = $bills['pament_mode'];
                 $model->watches_id = $bills['watches_id'][$i];
-                $model->pament_mode = $bills['pament_mode'][$i];
                 $model->quantity = $bills['quantity'][$i];
-                if(($bills['watches_id'][$i]=='')
-                    ||($bills['pament_mode'][$i]=='')||($bills['quantity'][$i]=='')){
+                if (($bills['watches_id'][$i] == '')
+                    || ($bills['quantity'][$i] == '')
+                ) {
                     continue;
-                } else{
-                    if(!$model->save())
-                    throw new Exception('Bill not saved'. Json::encode($model->getErrors()));
+                } else {
+                    if (!$model->save()) {
+                        throw new Exception('Bill not saved' . Json::encode($model->getErrors()));
+                    }
+                    $bill_id = $model->billrecord;
                 }
             }
+            return $this->redirect(array('site/report/', 'billId' => $bill_id));
         }
-        return $this->render('bill',['model'=>$model,]);
+        return $this->render('bill', ['model' => $model, 'count' => 0]);
+
     }
 
-    public function actionReturns(){
+    public function actionAddWatch($count)
+    {
+        $model = new Bills();
+        echo $this->renderAjax('_watch-add', ['model' => $model, 'count' => $count]);
+    }
+
+    public function actionReturns()
+    {
+        /*$this->layout=false;*/
         return $this->render('returns');
     }
 
-   /* public function actionFeedbackForm(){
-        return $this->render('feedbackForm');
-    }*/
 
-    public function actionFeedback(){
+    public function actionFeedback()
+    {
         $model = new Feedback();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($feed = $model->feed())
-            Yii::$app->session->setFlash('success', 'thank you for your feedback');
+                Yii::$app->session->setFlash('success', 'thank you for your feedback');
             return $this->refresh();
-        }else{
-            return $this->render('feedbackForm',['model'=>$model,]);
+        } else {
+            return $this->render('feedbackForm', ['model' => $model,]);
         }
-
-        /*return $this->render('FeedbackForm',['model'=>$model]);*/
-        /*return $this->render('feedbackform');*/
     }
 
+    public function actionReport($billId)
+    {
+        $this->layout = false;
+        $models = Bills::find()->where(['billrecord' => $billId])->all();
+
+        // get your HTML raw content without any layouts or scripts
+        $content = $this->render('billTemplate', [
+                'items' => $models
+        ]);
+
+        // setup kartik\mpdf\Pdf component
+        $pdf = new Pdf([
+            // set to use core fonts only
+            'mode' => Pdf::MODE_CORE,
+            // A4 paper format
+            'format' => Pdf::FORMAT_A4,
+            // portrait orientation
+            'orientation' => Pdf::ORIENT_PORTRAIT,
+            // stream to browser inline
+            'destination' => Pdf::DEST_BROWSER,
+            // your html content input
+            'content' => $content,
+            // format content from your own css file if needed or use the
+            // enhanced bootstrap css built by Krajee for mPDF formatting
+            'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+            // any css to be embedded if required
+            'cssInline' => '.kv-heading-1{font-size:18px}',
+            // set mPDF properties on the fly
+            'options' => ['title' => 'Krajee Report Title'],
+            // call mPDF methods on the fly
+            'methods' => [
+                'SetHeader' => ['<p align="center"><img src="/img/test-header.png" class="img-responsive col-md-12" alt="Responsive image">
+                            </p>' . date("r")],
+                'SetFooter' => ['<p align="center"><img src="/img/test-footer.png" class="img-responsive col-md-12" alt="Responsive image">
+                            </p>
+                                '],
+            ]
+        ]);
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_RAW;
+        $headers = Yii::$app->response->headers;
+        $headers->add('Content-Type', 'application/pdf');
+
+        // return the pdf output as per the destination setting
+        return $pdf->render();
+    }
 
 }
