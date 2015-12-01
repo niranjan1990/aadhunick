@@ -3,7 +3,7 @@
  * Created by napster on 9/6/2015.
  */
 priceUpdate();
-Discount();
+Misc();
 Netvalue();
 
 $('#add').click(function () {
@@ -11,9 +11,6 @@ $('#add').click(function () {
     $.get('/index.php/site/add-watch', {'count' : count}, function(data){
         $('#bill tbody').append('<tr>'+data+'</tr>');
 
-        /*$('input[id^="bills-price"]').change(function(){
-            alert($(this).val());
-        });*/
         priceUpdate();
         Netvalue();
     });
@@ -36,11 +33,18 @@ function priceUpdate () {
     });
 }
 
-function Discount(){
+function Misc(){
     $('#bills-discount').change(function(){
-       alert($(this).val());
+        var discount=($('#bills-net').val())*($(this).val()/100)
+        $('#bills-discountValue').val(discount);
+        var Vat=$('#bills-net').val()/1.145;
+        $('#bills-vatValue').val(Vat);
+        var total=parseInt($('#bills-net').val())-parseInt($('#bills-discountValue').val())-parseInt($('#bills-vatValue').val());
+        alert(total);
+        $('#bills-totalValue').val(total);
     });
 }
+
 
 function Netvalue(){
     $('.bills-price').change(function(){
@@ -55,29 +59,11 @@ function updateTotal() {
         var price=$(this).val();
         total=total + +price;
         $('#bills-net').val(total);
-        /* alert($(this).attr('id'));
-         alert($(this).val());*/
+
     });
 }
 
-/*
 
-var count = parseInt($('#add').attr('value'));
-
-$('input[id^="bills-price"]').change(function(){
-    alert($(this).val());
-});
-
-$('input[id^="bills-quantity"]').change(function(){
-
-    alert(count);
-});
-
-$('input[id^="bills-discount"]').change(function(){
-    alert($(this).val());
-});
-
-*/
 
 
 

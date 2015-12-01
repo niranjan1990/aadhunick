@@ -54,7 +54,7 @@ use yii\widgets\ActiveForm;
                             <th>
                                 <div class="form-group field-bills-net required">
                                     <label class="control-label" for="bill-net">Net Value</label>
-                                    <input type="text" id="bills-net" class="form-control" name="net">
+                                    <input type="text" id="bills-net" class="form-control" name="net" readonly>
                                 </div>
                             </th>
                         </tr>
@@ -69,7 +69,7 @@ use yii\widgets\ActiveForm;
                                 <div class="form-group field-bills-discountValue required">
                                     <label class="control-label" for="bills-discountValue">Discount Value</label>
                                     <input type="text" id="bills-discountValue" class="form-control"
-                                           name="Discount Value" >
+                                           name="Discount Value" readonly >
                                 </div>
                             </th>
                         </tr>
@@ -77,13 +77,13 @@ use yii\widgets\ActiveForm;
                             <th colspan="4">
                                 <div class="form-group field-bills-vat required ">
                                     <label class="control-label" for="bills-vat">VAT</label>
-                                    <input type="text" id="bills-vat" class="form-control" name="VAT">
+                                    <input type="text" id="bills-vat" class="form-control" name="VAT" value="14.5%" readonly>
                                 </div>
                             </th>
                             <th>
                                 <div class="form-group field-bills-vatValue required">
                                     <label class="control-label" for="bills-vatValue">VAT Value</label>
-                                    <input type="text" id="bills-vatValue" class="form-control" name="VAT Value">
+                                    <input type="text" id="bills-vatValue" class="form-control" name="VAT Value" readonly>
                                 </div>
                             </th>
                         </tr>
@@ -91,7 +91,7 @@ use yii\widgets\ActiveForm;
                             <th colspan="4">
                                 <div class="form-group field-bills-total required ">
                                     <label class="control-label" for="bills-total">Total</label>
-                                    <input type="text" id="bills-total" class="form-control" name="Total">
+                                 <!--   <input type="text" id="bills-total" class="form-control" name="Total">-->
                                 </div>
                             </th>
                             <th>
